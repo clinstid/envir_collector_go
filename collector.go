@@ -110,7 +110,7 @@ func readValues(bitRate, dataBits, stopBits int, usbDevice string, c chan XMLMes
 		log.Println("Example XML result:", exampleMessage)
 	*/
 	options := serial.Options{BitRate: bitRate, DataBits: dataBits, StopBits: stopBits}
-	log.Println("[r]: Connecting to device")
+	log.Println("[r]: Connecting to device", usbDevice)
 	p, err := options.Open(usbDevice)
 	if err != nil {
 		log.Panic("Failed to open usb device:", err)
@@ -195,6 +195,25 @@ func main() {
 	dataBits := getenvAsInt("ENVIR_SERIAL_DATA_BITS", 8)
 	stopBits := getenvAsInt("ENVIR_SERIAL_STOP_BITS", 1)
 	usbDevice := getenv("ENVIR_SERIAL_USB_DEVICE", "/dev/ttyUSB0")
+
+	// Potential USB device files
+	usbDeviceList := []string{
+		"/dev/ttyUSB0",
+		"/dev/ttyUSB1",
+		"/dev/ttyUSB2",
+		"/dev/ttyUSB3",
+	}
+
+	// Attempt to check if the device exists by going through usbDevice.
+	// Hopefully the specified device will work.
+	if _, err := os.Stat(usbDevice); os.IsNotExist(err) {
+		for _, e := range usbDeviceList {
+			if _, err := os.Stat(e); err == nil {
+				usbDevice = e
+				break
+			}
+		}
+	}
 
 	dbHost := getenv("ENVIR_DB_HOST", "yoda") // TODO: Switch to localhost
 	dbUser := getenv("ENVIR_DB_USER", "energydash")
