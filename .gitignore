@@ -23,3 +23,5 @@ _testmain.go
 *.test
 *.prof
 envir_collector_go
+
+/vendor
