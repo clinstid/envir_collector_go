@@ -25,3 +25,4 @@ _testmain.go
 envir_collector_go
 
 /vendor
+glide.lock

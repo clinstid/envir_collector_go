@@ -1,4 +1,7 @@
 package: .
 import:
 - package: github.com/lib/pq
+  version: dd1fe2071026ce53f36a39112e645b4d4f5793a4
+
 - package: github.com/mikepb/go-serial
+  version: 3db078dbcc1c04e919dfb1d9c39ae42d15b6129d
