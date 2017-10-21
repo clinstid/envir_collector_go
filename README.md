@@ -6,14 +6,29 @@ Unlike the original version from my [energydash](https://github.com/clinstid/ene
 
 The data is currently stored in a single table called `energydash` (yeah, I kept the name):
 
-| Column    | Description                                                                                |
-|-----------|--------------------------------------------------------------------------------------------|
-| src       | source and software version                                                                |
-| dsb       | days since "birth"                                                                         |
-| time      | 24 hour clock time (this is set by the collector rather than trusting the original source) |
-| tmprf     | temperature in Fahrenheit                                                                  |
-| sensor    | sensor id                                                                                  |
-| device_id | ID for the device                                                                          |
-| ch1_watts | Power reading on channel 1                                                                 |
-| ch2_watts | Power reading on channel 2                                                                 |
-| ch3_watts | Power reading on channel 3                                                                 |
+```sql
+-- Table: public.energydash
+
+-- DROP TABLE public.energydash;
+
+CREATE TABLE public.energydash
+(
+  src character varying,
+  dsb integer,
+  "time" timestamp with time zone NOT NULL,
+  tmprf double precision,
+  sensor integer,
+  device_id character varying,
+  ch1_watts integer,
+  ch2_watts integer,
+  ch3_watts integer,
+  CONSTRAINT energydash_pkey PRIMARY KEY ("time")
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE public.energydash
+  OWNER TO postgres;
+GRANT ALL ON TABLE public.energydash TO postgres;
+GRANT ALL ON TABLE public.energydash TO energydash;
+```
