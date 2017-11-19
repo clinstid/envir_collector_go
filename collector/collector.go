@@ -35,23 +35,10 @@ func main() {
 	stopBits := getenvAsInt("ENVIR_SERIAL_STOP_BITS", 1)
 	usbDevice := getenv("ENVIR_SERIAL_USB_DEVICE", "/dev/ttyUSB0")
 
-	// Potential USB device files
-	usbDeviceList := []string{
-		"/dev/ttyUSB0",
-		"/dev/ttyUSB1",
-		"/dev/ttyUSB2",
-		"/dev/ttyUSB3",
-	}
-
-	// Attempt to check if the device exists by going through usbDevice.
-	// Hopefully the specified device will work.
-	if _, err := os.Stat(usbDevice); os.IsNotExist(err) {
-		for _, e := range usbDeviceList {
-			if _, err := os.Stat(e); err == nil {
-				usbDevice = e
-				break
-			}
-		}
+	envirClient, err := shared.NewEnvirClient(bitRate, dataBits, stopBits, usbDevice)
+	if err != nil {
+		log.Panic("Failed to create an EnvirClient:", err)
+		return
 	}
 
 	// Load DB configuration from env
@@ -60,13 +47,13 @@ func main() {
 	dbPassword := getenv("ENVIR_DB_PASSWORD", "energydash")
 	dbName := getenv("ENVIR_DB_NAME", "energydash")
 
+	// Create a database client for the writer to use
+	dbClient := shared.NewDBClient(dbHost, dbUser, dbPassword, dbName)
+
 	var c = make(chan shared.XMLMessage, 1000)
 
 	// Start the reader process
-	go readValues(bitRate, dataBits, stopBits, usbDevice, c)
-
-	// Create a database client for the writer to use
-	dbClient := shared.NewDBClient(dbHost, dbUser, dbPassword, dbName)
+	go readValues(envirClient, c)
 
 	// Start the writer process
 	go writeValues(c, dbClient)
