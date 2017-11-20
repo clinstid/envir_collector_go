@@ -29,11 +29,13 @@ func getenv(key, fallback string) string {
 }
 
 func main() {
+	// USB serial device parameters
 	bitRate := flag.Int("bit-rate", 57600, "serial bit rate in bps")
 	dataBits := flag.Int("data-bits", 8, "serial data bits")
 	stopBits := flag.Int("stop-bits", 1, "serial stop bits")
 	usbDevice := flag.String("usb-device", "/dev/ttyUSB0", "USB device path")
 
+	// DB configuration parameters
 	dbHost := flag.String("db-host", "yoda", "database host name")
 	dbUser := flag.String("db-user", "energydash", "Database user")
 	dbPassword := flag.String("db-password", "energydash", "Database password")
