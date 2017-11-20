@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"os"
@@ -28,27 +29,26 @@ func getenv(key, fallback string) string {
 }
 
 func main() {
-	// TODO Load configuration using flags instead of env vars
-	// Load USB configuration from env
-	bitRate := getenvAsInt("ENVIR_SERIAL_BIT_RATE", 57600)
-	dataBits := getenvAsInt("ENVIR_SERIAL_DATA_BITS", 8)
-	stopBits := getenvAsInt("ENVIR_SERIAL_STOP_BITS", 1)
-	usbDevice := getenv("ENVIR_SERIAL_USB_DEVICE", "/dev/ttyUSB0")
+	bitRate := flag.Int("bit-rate", 57600, "serial bit rate in bps")
+	dataBits := flag.Int("data-bits", 8, "serial data bits")
+	stopBits := flag.Int("stop-bits", 1, "serial stop bits")
+	usbDevice := flag.String("usb-device", "/dev/ttyUSB0", "USB device path")
 
-	envirClient, err := shared.NewEnvirClient(bitRate, dataBits, stopBits, usbDevice)
+	dbHost := flag.String("db-host", "yoda", "database host name")
+	dbUser := flag.String("db-user", "energydash", "Database user")
+	dbPassword := flag.String("db-password", "energydash", "Database password")
+	dbName := flag.String("db-name", "energydash", "Database name")
+
+	flag.Parse()
+
+	envirClient, err := shared.NewEnvirClient(*bitRate, *dataBits, *stopBits, *usbDevice)
 	if err != nil {
 		log.Panic("Failed to create an EnvirClient:", err)
 		return
 	}
 
-	// Load DB configuration from env
-	dbHost := getenv("ENVIR_DB_HOST", "yoda") // TODO: Switch to localhost
-	dbUser := getenv("ENVIR_DB_USER", "energydash")
-	dbPassword := getenv("ENVIR_DB_PASSWORD", "energydash")
-	dbName := getenv("ENVIR_DB_NAME", "energydash")
-
 	// Create a database client for the writer to use
-	dbClient := shared.NewDBClient(dbHost, dbUser, dbPassword, dbName)
+	dbClient := shared.NewDBClient(*dbHost, *dbUser, *dbPassword, *dbName)
 
 	var c = make(chan shared.XMLMessage, 1000)
 
