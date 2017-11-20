@@ -27,6 +27,7 @@ envir_collector_go
 /vendor
 glide.lock
 collector/collector
+cli/cli
 
 tags
 *.sw[op]

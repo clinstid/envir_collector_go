@@ -101,3 +101,32 @@ func (c *DBClient) WriteMessage(x XMLMessage) error {
 	}
 	return err
 }
+
+func (c *DBClient) GetReadings(startTime, endTime time.Time) (*sql.Rows, error) {
+	db, err := c.open()
+	if err != nil {
+		log.Panic("Failed to open DB:", err)
+		return nil, err
+	}
+
+	queryStrTemplate := "SELECT time, ch1_watts, ch2_watts, ch3_watts FROM energydash WHERE time >= '%s' AND time < '%s'"
+	queryStr := fmt.Sprintf(queryStrTemplate, startTime.Format(time.RFC3339), endTime.Format(time.RFC3339))
+	log.Println("Query string:", queryStr)
+	rows, err := db.Query(queryStr)
+	if err != nil {
+		log.Panic("Failed to query  DB:", err)
+		return nil, err
+	}
+
+	for rows.Next() {
+		var time time.Time
+		var ch1_watts, ch2_watts, ch3_watts int
+		if err := rows.Scan(&time, &ch1_watts, &ch2_watts, &ch3_watts); err != nil {
+			log.Panic("Failed to read from row scan:", err)
+			return nil, err
+		}
+		log.Println(time, ch1_watts, ch2_watts, ch3_watts)
+	}
+
+	return rows, nil
+}
