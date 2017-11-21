@@ -1,11 +1,18 @@
-all: cli/cli collector/collector
+.PHONY: all
+all: cli collector api
 
-cli/cli: cli/*.go
+.PHONY: cli
+cli:
 	cd cli && go build
 
-collector/collector: collector/*.go
+.PHONY: collector
+collector:
 	cd collector && go build
 
+.PHONY: api
+api:
+	cd api && go build
+
+.PHONY: clean
 clean:
 	rm -vf cli/cli collector/collector
-

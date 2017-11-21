@@ -26,8 +26,11 @@ envir_collector_go
 
 /vendor
 glide.lock
+
+# generated binaries
 collector/collector
 cli/cli
+api/api
 
 tags
 *.sw[op]

@@ -116,7 +116,8 @@ parameters:
       A time that indicates all resources to retrieve will be created on or
       after the specified time. The value specified should conform to
       [RFC3339](http://xml2rfc.ietf.org/public/rfc/html/rfc3339.html#anchor14)
-      like `1970-01-01T12:00:00.000Z`
+      like `1970-01-01T12:00:00.000Z`. The default if not specified is one hour
+      before the request was received.
     in: query
     type: string
 
@@ -126,7 +127,8 @@ parameters:
       A time that indicates all resources to retrieve will be created before
       the specified time. The value specified should conform to
       [RFC3339](http://xml2rfc.ietf.org/public/rfc/html/rfc3339.html#anchor14)
-      like `1970-01-01T12:00:00.000Z`
+      like `1970-01-01T12:00:00.000Z`. The default if not specified is the time
+      the request was received.
     in: query
     type: string
 

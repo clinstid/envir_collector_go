@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"log"
 	"time"
@@ -53,9 +54,13 @@ func main() {
 
 	log.Println("Running query from", startTime, "to", endTime, "...")
 	dbClient := shared.NewDBClient(*dbHost, *dbUser, *dbPassword, *dbName)
-	rows, err := dbClient.GetReadings(startTime, endTime)
+	readings, err := dbClient.GetReadings(startTime, endTime)
 	if err != nil {
 		log.Panic("Failed to get readings:", err)
 	}
-	log.Println(rows)
+	readingsJson, err := json.Marshal(&readings)
+	if err != nil {
+		log.Panic("Failed to marshal JSON from readings", err)
+	}
+	log.Println(string(readingsJson))
 }

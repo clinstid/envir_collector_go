@@ -102,14 +102,26 @@ func (c *DBClient) WriteMessage(x XMLMessage) error {
 	return err
 }
 
-func (c *DBClient) GetReadings(startTime, endTime time.Time) (*sql.Rows, error) {
+type Reading struct {
+	Src      string    `json:"src"`
+	Dsb      int       `json:"dsb"`
+	Time     time.Time `json:"time"`
+	Tmprf    float32   `json:"tmprf"`
+	Sensor   int       `json:"sensor"`
+	DeviceID string    `json:"device_id"`
+	Ch1Watts int       `json:"ch1_watts"`
+	Ch2Watts int       `json:"ch2_watts"`
+	Ch3Watts int       `json:"ch3_watts"`
+}
+
+func (c *DBClient) GetReadings(startTime, endTime time.Time) ([]Reading, error) {
 	db, err := c.open()
 	if err != nil {
 		log.Panic("Failed to open DB:", err)
 		return nil, err
 	}
 
-	queryStrTemplate := "SELECT time, ch1_watts, ch2_watts, ch3_watts FROM energydash WHERE time >= '%s' AND time < '%s'"
+	queryStrTemplate := "SELECT * FROM energydash WHERE time >= '%s' AND time < '%s'"
 	queryStr := fmt.Sprintf(queryStrTemplate, startTime.Format(time.RFC3339), endTime.Format(time.RFC3339))
 	log.Println("Query string:", queryStr)
 	rows, err := db.Query(queryStr)
@@ -118,15 +130,17 @@ func (c *DBClient) GetReadings(startTime, endTime time.Time) (*sql.Rows, error) 
 		return nil, err
 	}
 
+	var readings []Reading
 	for rows.Next() {
-		var time time.Time
-		var ch1_watts, ch2_watts, ch3_watts int
-		if err := rows.Scan(&time, &ch1_watts, &ch2_watts, &ch3_watts); err != nil {
+		var reading Reading
+		err := rows.Scan(&reading.Src, &reading.Dsb, &reading.Time, &reading.Tmprf, &reading.Sensor,
+			&reading.DeviceID, &reading.Ch1Watts, &reading.Ch2Watts, &reading.Ch3Watts)
+		if err != nil {
 			log.Panic("Failed to read from row scan:", err)
 			return nil, err
 		}
-		log.Println(time, ch1_watts, ch2_watts, ch3_watts)
+		readings = append(readings, reading)
 	}
 
-	return rows, nil
+	return readings, nil
 }
