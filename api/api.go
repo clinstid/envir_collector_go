@@ -29,12 +29,12 @@ func readingsHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Panic("Failed to get readings:", err)
 	}
-	readingsJson, err := json.Marshal(&readings)
+	readingsJSON, err := json.Marshal(&readings)
 	if err != nil {
 		log.Panic("Failed to marshal JSON from readings", err)
 	}
 	w.Header().Set("Content-Type", "application/json")
-	w.Write(readingsJson)
+	w.Write(readingsJSON)
 }
 
 func main() {
