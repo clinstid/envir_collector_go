@@ -15,4 +15,4 @@ api:
 
 .PHONY: clean
 clean:
-	rm -vf cli/cli collector/collector
+	rm -vf cli/cli collector/collector api/api
