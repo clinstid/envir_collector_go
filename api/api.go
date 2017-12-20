@@ -45,8 +45,10 @@ func main() {
 	dbName := flag.String("db-name", "energydash", "Database name")
 	dbClient = shared.NewDBClient(*dbHost, *dbUser, *dbPassword, *dbName)
 
-	log.Println("Starting http server")
+	apiInterface := ":8080"
+
+	log.Println("Starting http server on", apiInterface)
 	http.HandleFunc("/readings", readingsHandler)
 
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	log.Fatal(http.ListenAndServe(apiInterface, nil))
 }
