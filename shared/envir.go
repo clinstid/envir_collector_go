@@ -83,6 +83,8 @@ func NewEnvirClient(bitRate, dataBits, stopBits int, usbDevice string) (*EnvirCl
 				break
 			}
 		}
+	} else {
+		c.usbDevice = usbDevice
 	}
 
 	if c.usbDevice == "" {
